@@ -27,8 +27,13 @@ describe('CDN Route Handler', () => {
     expect(response.status).toBe(404);
   });
 
-  it('should prevent directory traversal', async () => {
+  it('should prevent directory traversal with ../', async () => {
     const response = await request(app).get('/cdn/../sensitive-file.txt');
+    expect(response.status).toBe(403);
+  });
+
+  it('should prevent directory traversal with absolute path', async () => {
+    const response = await request(app).get('/cdn/absolute/path/outside');
     expect(response.status).toBe(403);
   });
 });
