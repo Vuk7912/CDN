@@ -14,24 +14,24 @@ export const cdnRouter = express.Router();
  * - Checks file existence
  */
 cdnRouter.get('/:filename', (req: Request, res: Response) => {
-  const { filename } = req.params;
-  const filePath = path.resolve(ALLOWED_CDN_DIR, filename);
+    const { filename } = req.params;
+    const filePath = path.resolve(ALLOWED_CDN_DIR, filename);
 
-  // Security: Validate that the resolved path is within the CDN directory
-  if (!filePath.startsWith(ALLOWED_CDN_DIR)) {
-    return res.status(403).json({ error: 'Access denied' });
-  }
+    // Security: Validate that the resolved path is within the CDN directory
+    if (!filePath.startsWith(ALLOWED_CDN_DIR)) {
+        return res.status(403).json({ error: 'Access denied' });
+    }
 
-  // Check if file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'File not found' });
-  }
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'File not found' });
+    }
 
-  // Retrieve file and send
-  try {
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error('File retrieval error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    // Retrieve file and send
+    try {
+        res.sendFile(filePath);
+    } catch (error) {
+        console.error('File retrieval error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
