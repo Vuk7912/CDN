@@ -13,18 +13,15 @@ export const cdnRouter = express.Router();
  * - Prevents directory traversal
  * - Checks file existence
  */
-cdnRouter.get('/:filename', (req: Request, res: Response) => {
-    const { filename } = req.params;
+cdnRouter.get('/*', (req: Request, res: Response) => {
+    const filename = req.params[0];
     
-    // Reject paths containing directory traversal characters or segments
-    const normalizedFilename = path.normalize(filename);
-    const segments = normalizedFilename.split(path.sep);
-    
-    if (segments.includes('..') || path.isAbsolute(normalizedFilename)) {
+    // Reject paths containing directory traversal characters
+    if (filename.includes('../') || path.isAbsolute(filename)) {
         return res.status(403).json({ error: 'Access denied' });
     }
 
-    const filePath = path.resolve(ALLOWED_CDN_DIR, normalizedFilename);
+    const filePath = path.resolve(ALLOWED_CDN_DIR, filename);
 
     // Security: Validate that the resolved path is within the CDN directory
     if (!filePath.startsWith(ALLOWED_CDN_DIR)) {
