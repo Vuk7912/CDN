@@ -16,14 +16,15 @@ export const cdnRouter = express.Router();
 cdnRouter.get('/:filename', (req: Request, res: Response) => {
     const { filename } = req.params;
     
-    // Explicit checks for directory traversal
-    if (filename.includes('../') || 
-        filename.startsWith('/') || 
-        path.isAbsolute(filename)) {
+    // Reject paths containing directory traversal characters or segments
+    const normalizedFilename = path.normalize(filename);
+    const segments = normalizedFilename.split(path.sep);
+    
+    if (segments.includes('..') || path.isAbsolute(normalizedFilename)) {
         return res.status(403).json({ error: 'Access denied' });
     }
 
-    const filePath = path.resolve(ALLOWED_CDN_DIR, filename);
+    const filePath = path.resolve(ALLOWED_CDN_DIR, normalizedFilename);
 
     // Security: Validate that the resolved path is within the CDN directory
     if (!filePath.startsWith(ALLOWED_CDN_DIR)) {
