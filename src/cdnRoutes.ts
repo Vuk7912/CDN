@@ -13,8 +13,9 @@ export const cdnRouter = express.Router();
  * - Prevents directory traversal
  * - Checks file existence
  */
-cdnRouter.get('/:filename(*)', (req: Request, res: Response) => {
-    const { filename } = req.params;
+cdnRouter.get('*', (req: Request, res: Response) => {
+    // Remove leading /cdn/ from the path
+    const filename = req.path.replace(/^\/cdn\//, '');
     
     // Reject paths containing directory traversal characters
     if (filename.includes('../') || path.isAbsolute(filename)) {
