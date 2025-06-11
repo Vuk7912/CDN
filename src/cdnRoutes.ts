@@ -13,16 +13,11 @@ export const cdnRouter = express.Router();
  * - Prevents directory traversal
  * - Checks file existence
  */
-cdnRouter.get('*', (req: Request, res: Response) => {
-    const filename = req.path.substring(1);  // Remove leading slash
+cdnRouter.get('/(*)', (req: Request, res: Response) => {
+    const filename = req.params[0] || '';
     
-    // Reject paths containing directory traversal characters or absolute paths
-    if (
-        filename.includes('../') || 
-        filename.startsWith('/') || 
-        path.isAbsolute(filename) || 
-        filename.split('/').some(segment => segment === '..')
-    ) {
+    // Reject paths containing directory traversal characters
+    if (filename.includes('../') || path.isAbsolute(filename)) {
         return res.status(403).json({ error: 'Access denied' });
     }
 
