@@ -15,6 +15,12 @@ export const cdnRouter = express.Router();
  */
 cdnRouter.get('/:filename', (req: Request, res: Response) => {
     const { filename } = req.params;
+    
+    // Additional check for potential directory traversal
+    if (filename.includes('../')) {
+        return res.status(403).json({ error: 'Access denied' });
+    }
+
     const filePath = path.resolve(ALLOWED_CDN_DIR, filename);
 
     // Security: Validate that the resolved path is within the CDN directory
